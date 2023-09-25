@@ -1,4 +1,10 @@
-import { AnchorProvider, Program, utils, web3 } from "@project-serum/anchor";
+import {
+  AnchorProvider,
+  BN,
+  Program,
+  utils,
+  web3,
+} from "@project-serum/anchor";
 import {
   Connection,
   PublicKey,
@@ -50,16 +56,24 @@ const opts: SendOptions = {
 /* We will use this for calling our SC functions. */
 const { SystemProgram } = web3;
 
+export type CampaignType = {
+  pubkey: web3.PublicKey;
+  admin: web3.PublicKey;
+  name: string;
+  description: string;
+  amountDonated: BN;
+};
+
 function App() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [campaigns, setCampaigns] = useState<any[] | null>(null);
+  const [campaigns, setCampaigns] = useState<CampaignType[] | null>(null);
 
   /* This is creating a provider. A provider is an authenticated connection
   to Solana. Notice how window.solana is needed here. Why? Because
   to make it provider we need a connected wallet. You already did
   this earlier when you could connect on Phantom, which gave you permisson
   to give our web app access to our wallet. Remember, you can't communicate
-  with Solana at all, unless (olmadıkça, olmazsa) you have aconnected wallet. */
+  with Solana at all, unless (olmadıkça, olmazsa) you have a connected wallet. */
   const getProvider = () => {
     const connection = new Connection(network, opts.preflightCommitment);
     const provider = new AnchorProvider(connection, window.solana, opts);
@@ -171,6 +185,47 @@ function App() {
     });
   };
 
+  const donate = async (publicKey: string) => {
+    await tryCall(async () => {
+      const provider = getProvider();
+      const program = new Program<Crowdfunding>(IDL, programId, provider);
+
+      const donateResult = await program.methods
+        .donate(new BN(0.2 * web3.LAMPORTS_PER_SOL))
+        .accounts({
+          campaign: publicKey,
+          user: provider.wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc();
+      console.log(">>>  donateResult:", donateResult);
+      await getCampaigns();
+    });
+  };
+
+  const withdraw = async (publicKey: string) => {
+    await tryCall(async () => {
+      const provider = getProvider();
+      const program = new Program<Crowdfunding>(IDL, programId, provider);
+
+      const donateResult = await program.methods
+        .withdraw(new BN(0.2 * web3.LAMPORTS_PER_SOL))
+        .accounts({
+          /* This time it still consist of the `campaign` and `user`. But we don't need
+          the `systemProgram` so we can actually just get rid of this. Why? Because
+          for the withdraw function, this campaign is a program derived account and we're
+          withdrawing funds out of the campaign, which means our Solana program will take
+          care of authorizing the tx. The `systemProgram` is only needed if the tx is sending
+          funds from a users's wallet, which is not the case with the withdraw function. */
+          campaign: publicKey,
+          user: provider.wallet.publicKey,
+        })
+        .rpc();
+      console.log(">>>  donateResult:", donateResult);
+      await getCampaigns();
+    });
+  };
+
   const renderNotConnectedContainer = () => {
     return (
       <Button variant="primary" onClick={connectWallet}>
@@ -195,10 +250,25 @@ function App() {
             <p>Campaign ID: {campaign.pubkey.toString()}</p>
             <p>
               Balance:
-              {(campaign.amountDonated / web3.LAMPORTS_PER_SOL).toString()}
+              {(
+                campaign.amountDonated.toNumber() / web3.LAMPORTS_PER_SOL
+              ).toString()}
             </p>
             <p>Name: {campaign.name}</p>
             <p>Description: {campaign.description}</p>
+            <Button
+              variant="success"
+              onClick={() => donate(campaign.pubkey.toString())}
+            >
+              Click to donate!
+            </Button>
+            <Button
+              variant="success"
+              onClick={() => withdraw(campaign.pubkey.toString())}
+            >
+              Click to withdraw!
+            </Button>
+
             <hr />
           </div>
         ))}

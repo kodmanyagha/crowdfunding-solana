@@ -11,7 +11,7 @@ Tutorial: https://www.udemy.com/course/solana-developer/
 - [x] Creating ReactJS project which connects to Phantom wallet
 - [x] Communicating with our smart contract over Phantom wallet.
 - [x] Getting campaign info from current user's wallet address.
-- [ ] Donating campaign
-- [ ] Withdraw funds from a campaign.
+- [x] Donating campaign
+- [x] Withdraw funds from a campaign.
 - [ ] Staking SOL with Typescript
 - [ ] Building NFT project
