@@ -5,6 +5,12 @@ and other necessary libraries.
 
 Tutorial: https://www.udemy.com/course/solana-developer/
 
+## Running the app
+
+Term 1: `yarn dev`
+
+Term 2: `anchor build`
+
 ## Feature implementation status:
 
 - [x] Creating smart contract for crowdfunding purpose with Rust and Anchor framework.

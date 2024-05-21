@@ -1,6 +1,7 @@
 [features]
 seeds = false
 skip-lint = false
+
 [programs.localnet]
 crowdfunding = "4Mhozxxdm44cTcC22gpCpiQiHEtaaPCkdDG2ULrPrCVy"
 

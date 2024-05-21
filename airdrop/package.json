@@ -1,0 +1,13 @@
+{
+  "name": "airdrop",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.91.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "ts-node src/index.ts"
+  }
+}

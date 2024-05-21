@@ -1,6 +1,6 @@
-export async function tryCall(fn: () => any) {
+export async function tryInvoke(fn: () => any) {
   try {
-    await fn();
+    return await fn();
   } catch (e) {
     console.error(e);
   }
