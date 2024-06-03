@@ -15,7 +15,7 @@ import idlJson from "../../types/crowdfunding/crowdfunding-idl.json";
 
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { tryInvoke } from "../../types";
+import { swalAlert, tryInvoke } from "../../types";
 
 import { Crowdfunding, IDL } from "../../types/crowdfunding/crowdfunding";
 
@@ -51,7 +51,7 @@ export default function CampaignManager(props: any) {
       const { solana } = window;
       if (solana) {
         if (solana.isPhantom) {
-          console.log("Phantom wallet found.");
+          console.log("Phantom wallet found.", solana);
 
           const response = await solana.connect({
             onlyIfTrusted: true,
@@ -60,8 +60,11 @@ export default function CampaignManager(props: any) {
           setWalletAddress(response.publicKey.toString());
         }
       } else {
-        alert(
-          "Not found any wallet, please install Phantom wallet to your browser."
+        swalAlert(
+          "info",
+          <>
+            Not found any wallet, please install Phantom wallet to your browser.
+          </>
         );
       }
     } catch (e) {
@@ -88,12 +91,11 @@ export default function CampaignManager(props: any) {
     );
 
     console.log(">>>  campaignsResult:", campaignsResult);
-
-    //setCampaigns(campaignsResult);
+    setCampaigns(campaignsResult);
   };
 
   const createCampaign = async () => {
-    await tryInvoke(async () => {
+    let result = await tryInvoke(async () => {
       const provider = getProvider();
       const program = new Program<Crowdfunding>(IDL, programId, provider);
 
@@ -121,6 +123,14 @@ export default function CampaignManager(props: any) {
         campaign.toString()
       );
     });
+
+    if (typeof result === "string") {
+      swalAlert("error", <>{result}</>);
+    } else if (result instanceof Error) {
+      swalAlert("error", <>{result.message}</>);
+    } else {
+      swalAlert("success", <>Campaign created.</>);
+    }
   };
 
   const donate = async (publicKey: string) => {
@@ -213,9 +223,30 @@ export default function CampaignManager(props: any) {
   const connectWallet = async () => {
     const { solana } = window;
     if (solana) {
-      const response = await solana.connect();
-      console.log("Connected with public key: ", response.publicKey.toString());
-      setWalletAddress(response.publicKey.toString());
+      try {
+        const response = await solana.connect();
+        console.log(
+          "Connected with public key: ",
+          response.publicKey.toString()
+        );
+        setWalletAddress(response.publicKey.toString());
+      } catch (e) {
+        if (typeof e === "string") {
+          swalAlert(
+            "warning",
+            <>
+              <h1>{e}</h1>
+            </>
+          );
+        } else if (e instanceof Error) {
+          swalAlert(
+            "warning",
+            <>
+              <h1>{e.message}</h1>
+            </>
+          );
+        }
+      }
     }
   };
 

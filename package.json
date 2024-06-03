@@ -1,4 +1,7 @@
 {
+  "name": "crowfunding-solana",
+  "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
@@ -6,16 +9,16 @@
   },
   "packageManager": "yarn@1.22.22",
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.0"
+    "@coral-xyz/anchor": "0.30.0"
   },
   "devDependencies": {
-    "chai": "^5.1.1",
-    "mocha": "^10.4.0",
-    "ts-mocha": "^10.0.0",
-    "@types/bn.js": "^5.1.5",
-    "@types/chai": "^4.3.16",
-    "@types/mocha": "^10.0.6",
-    "typescript": "^5.4.5",
-    "prettier": "^3.2.5"
+    "chai": "5.1.1",
+    "mocha": "10.4.0",
+    "ts-mocha": "10.0.0",
+    "@types/bn.js": "5.1.5",
+    "@types/chai": "4.3.16",
+    "@types/mocha": "10.0.6",
+    "typescript": "5.4.5",
+    "prettier": "3.2.5"
   }
 }

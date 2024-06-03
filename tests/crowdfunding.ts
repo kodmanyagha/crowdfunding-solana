@@ -7,6 +7,7 @@ describe("crowdfunding", () => {
   anchor.setProvider(provider);
 
   const userWallet = anchor.web3.Keypair.generate();
+  console.log(">>  userWallet", userWallet);
 
   const program = anchor.workspace.Crowdfunding as Program<Crowdfunding>;
 

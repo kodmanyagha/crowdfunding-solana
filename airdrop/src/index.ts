@@ -1,4 +1,5 @@
 import {
+  BlockheightBasedTransactionConfirmationStrategy,
   Connection,
   Keypair,
   LAMPORTS_PER_SOL,
@@ -22,6 +23,32 @@ const getWalletBalance = async () => {
   }
 };
 
+const airDropSol = async () => {
+  try {
+    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    const fromAirDropSignature = await connection.requestAirdrop(
+      publicKey,
+      2 * LAMPORTS_PER_SOL
+    );
+    const latestBlockHash = await connection.getLatestBlockhash();
+
+    console.log("fromAirDropSignature: ", fromAirDropSignature);
+
+    const strategy: BlockheightBasedTransactionConfirmationStrategy = {
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: fromAirDropSignature,
+    };
+
+    // https://stackoverflow.com/a/72333685/2132069
+    await connection.confirmTransaction(strategy);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 (async () => {
+  await getWalletBalance();
+  await airDropSol();
   await getWalletBalance();
 })();
